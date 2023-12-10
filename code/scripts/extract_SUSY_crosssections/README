@@ -1,0 +1,12 @@
+# These files are for extracting the SUSY cross secitons from
+the LHC SUSY Cross Sections website, for example from
+https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections8TeVgluglu
+
+The output is the cross-section (in pb) for the process in crossx.out, and
+the absolute error on the cross-section (in pb) in crossxerr.out. The comma
+separated lists are perfect for copy/pasting into a C++ array.
+
+Step 1) Copy/paste the table on the website into gogo.txt
+Step 2) 
+ user> ./extract_crossx.x gogo.txt
+Step 3) Copy/paste these .out files into a C++ array for use

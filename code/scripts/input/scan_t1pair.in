@@ -1,0 +1,98 @@
+#! /bin/bash
+
+## This is a source file used as input to fullscript_1.2.sh 
+
+#Analysis Options
+# -1: No Analysis
+#  0: Do ATLAS and CMS Analysis
+#  1: Do ATLAS Analysis Only
+#  2: Do CMS Analysis Only
+ANSYSOPT=-1
+
+#Event Generation Options
+# -1: No Generation
+#  0: Run ATLAS and CMS
+#  1: Run ATLAS only
+#  2: Run CMS only
+GENOPT=-1
+
+#Plotting Options
+# -1: No Plotting
+#  0: Do Plotting
+PLOTOPT=0
+
+ATLTAGS="ATLAS2012_166" #ATLAS2012_145 ATLAS2012_165 ATLAS2012_166 ATLAS2013_061"  #ATLAS analysis codes
+CMSTAGS="" #CMS2012_028" #CMS analysis codes
+ANSYSTAGS="${ATLTAGS} ${CMSTAGS}" # all analysis codes
+
+MODEL="mssm-NSUSY"  #natural supersymmetry
+M1TAG=" 1"  #this is the tag used in the suspect2 input file for bino soft mass
+M2TAG=" 2"  #this is the tag used in the suspect2 input file for wino soft mass
+M3TAG=" 3"  #this is the tag used in the suspect2 input file for gluino soft mass
+muTAG="23"  #this is the tag used in the suspect2 input file for higgsino soft mass
+MQ3TAG="43" #this is the tag used in the suspect2 input file for left 3rd gen squark soft mass
+MU3TAG="46" #this is the tag used in the suspect2 input file for right stop soft mass
+BOTLABEL="      5" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #bottom
+TOPLABEL="      6" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #top
+B1LABEL="1000005" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #sbottom
+T1LABEL="1000006" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #stop
+GOLABEL="1000021" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #gluino
+N1LABEL="1000022" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #neutralino
+X1LABEL="1000024" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #chargino
+
+## Parameters for travelling through NSUSY parameter space in a gridlike manner
+## Default Value ; Start Value ; End Value ; Step Value 
+## Higgsino Mass
+muMASS="1500" ; muSTART="   1" ; muEND=" 401" ; muSTEP="  50" 
+## Bino Mass
+M1MASS="1500" ; M1START="${M1MASS}" ; M1END="${M1MASS}" ; M1STEP="${M1MASS}" 
+## Wino Mass
+M2MASS="1500" ; M2START="${M2MASS}" ; M2END="${M2MASS}" ; M2STEP="${M2MASS}"
+## Gluino Mass
+M3MASS="1500" ; M3START="${M3MASS}" ; M3END="${M3MASS}" ; M3STEP="${M3MASS}"
+##Left 3rd Gen Squark Mass
+Q3MASS="2500" ; Q3START=" 200" ; Q3END="1000" ; Q3STEP="  50" 
+##Right Stop Squark Mass
+U3MASS="2500" ; U3START="${U3MASS}" ; U3END="${U3MASS}" ; U3STEP="${U3MASS}" 
+
+#### Manual List of Points in NSUSY parameter space####
+muMAN=""
+M1MAN=""
+M2MAN=""
+M3MAN=""
+Q3MAN=""
+U3MAN=""
+
+#### Specific Option For Sprectra
+DOUBLEOPTWINO=0  ## If On, then M2=2*M1
+DOUBLEOPTMU=0   ## If On, then mu=2*M1
+
+STORDIR="SCAN_T1PAIR" #name of directory where data is stored
+NEVENTS=50000 #Number of events to analyze 
+CMENERGY1=4000  #Energy of beam 1 in the collider, in GeV
+CMENERGY2=4000  #Energy of beam 2 in the collider, in GeV
+
+SEWOPT=0  # is process 1 complicated enough that I need to sew the production process together with the decay?
+PRODPART=""  # used to sew the production lhe files together with the decay lhe files
+
+# process 1 variables - is production process if SEWOPT=1 - is cmode if SEWOPT=0
+PROC1DIR="PP_T1T1X_CMODE" #name of directory where crossx/pythia/delphes data is created
+PROC1GEN1="p p > t1 t1~ , t1 > t n1  , t1~ > b~ x1- QED=99 QCD=99"
+PROC1GEN2="p p > t1 t1~ , t1 > b x1+ , t1~ > t~ n1  QED=99 QCD=99"
+
+#process 2 variables - is tmode decay if SEWOPT=1 - is tmode if SEWOPT=0
+PROC2DIR="PP_T1T1X_TMODE" #name of directory where crossx/pythia/delphes data is created
+PROC2GEN1="p p > t1 t1~ , t1 > t n1  , t1~ > t~ n1  QED=99 QCD=99"
+PROC2GEN2="p p > t1 t1~ , t1 > t n1  , t1~ > t~ n1  QED=99 QCD=99"
+
+#process 3 variables - is bmode decay if SEWOPT=1 - is bmode if SEWOPT=0
+PROC3DIR="PP_T1T1X_BMODE" #name of directory where crossx/pythia/delphes data is created
+PROC3GEN1="p p > t1 t1~ , t1 > b x1+ , t1~ > b~ x1- QED=99 QCD=99"
+PROC3GEN2="p p > t1 t1~ , t1 > b x1+ , t1~ > b~ x1- QED=99 QCD=99"
+
+## For the kinematic evaluation of a decay mode, see MIW_script_functions.h
+DECOPT1="0"
+DECOPTT="4"
+DECOPTB="5"
+
+FILEHEADER="mu, M1, M2, M3, MQ3, MU3, N1 Mass, X1 Mass, G Mass, B1Mass, T1 Mass"

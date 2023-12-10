@@ -1,0 +1,137 @@
+#####################################################
+##                                                 ##
+##                    Author:                      ##
+##          Matthew Inglis-Whalen, B.Sc.           ##
+##                                                 ##
+##                     Date:                       ##
+##                  August 2013                    ##
+##                                                 ##
+##                    Rights:                      ##
+##   Carleton Theoretical Particle Physics Group   ##
+##                                                 ##
+#####################################################
+
+------------------------ USAGE ------------------------
+
+-> On the physics computing network, you will most likely be connecting
+   through either thor or tyr. MadGraph5 does not work on these nodes.
+   You must connect to ethe egs working node, egs02 through the command:
+
+user> ssh user@egs02.physics.carleton.ca
+
+   The egs01 is also a valid working node. If you have trouble connecting,
+   you might have to ask one of the medical physics members for permission
+   to use their cluster nodes.
+
+------------------- INSTALLATION --------------------
+
+-> Place the MIW_codebase directory in your MadGraph5 directory
+-> For MadGraph5 to run, make sure that your python version is 
+   2.6 or later, but not 3.X. 
+-> In your .cshrc file, set the following variables:
+  + MG_HOME (your MadGraph5 directory)
+  + DATA_HOME (where you want MadGraph5 data to be stored)
+  + ROOTSYS (the location of CERN's ROOT package)
+  + SH_HOME (your SUSY-HIT directory)
+  + DELPHES_HOME (the delphes directory, should be in the MadGraph directory)
+-> In your .cshrc file, add ${DELPHES_HOME} to the following
+  + LIBPATH
+  + LPATH
+  + LD_LIBRARY_PATH
+  + DYLD_LIBRARY_PATH
+-> In your .cshrc file, add the following to your CPLUS_INCLUDE_PATH system variable:
+  + ${MG_HOME}/MIW_codebase/include
+  + ${DELPHES_HOME}
+  + ${DELPHES_HOME}/external
+-> From your MG_HOME directory, run ./MIW_codebase/CONFIGURE.sh
+   If there are no errors, the codebase is properly set up
+
+=== Other options ===
+
+-> If you would like to enable SGE job queueing, add the following four 
+   lines to your .cshrc file:
+
+if ( $?prompt && -e /usr/local/sge/boson_nest/common/settings.csh) then
+  echo "---Performing Kiln2 Initialization---"
+  source /usr/local/sge/boson_nest/common/settings.csh
+endif
+
+   Note that you must be connected to the physics computing network for this
+   to work properly.
+
+   To submit fullscript.sh jobs to the SGE batch system, from the MG_HOME directory type:
+
+user> ./MIW_codebase/scripts/sge_fullscript.tcsh inputfile.in
+
+   Note that some of the physics cluster nodes do not have the correct python version. A notable
+   example is the atlas30 node. Others may exist.
+
+---------------------- FULLSCRIPT ---------------------
+
+This bash script is the central tool of this codebase. It
+brings together all the various codes to generate events (MadGraph),
+shower events (Pythia), simulate the detector level smearing of these
+particle showers (Delphes), analyze the detector output (in-house ROOT codes),
+and plot the results of this analysis. The usage for fullscript.sh from the 
+MG_HOME directory is:
+
+user> ./MIW_codebase/scripts/fullscript.sh ./MIW_codebase/scripts/input/inputfile.sh
+
+------------------- NAMING CONVENTIONS ----------------
+
+As part of the input file, the variable STORDIR is used to
+name the process of interest, as well as the directory used to
+store the process' data, and the plotting tool for the 
+exclusion plot for the process. The convention used for the naming of the plotting
+code is:  plot_excl_br_curves_STORDIR.C
+
+All physics analyses have a name, let's call it ANSYSTAG. All analysis codes must
+be named code_ANSYSTAG.C and must be kept in the ${MG_HOME}/MIW_codebase/include/
+directory. The name of the analysis function in that file must be code_ANSYSTAG(). 
+To enable usage of this analysis code, you must:
+  -> In ${MG_HOME}/MIW_codebase/include/MIW_search_data.h, add the following
+
+     Int_t nreg_ANSYSTAG= ... ;
+     Double_t data_ANSYSTAG[nreg_ANSYSTAG]        ={ ... };
+     Double_t smpred_ANSYSTAG[nreg_ANSYSTAG]      ={ ... };
+     Double_t error_smpred_ANSYSTAG[nreg_ANSYSTAG]={ ... };
+     Double_t lumin_ANSYSTAG = ... ;  //pb^-1
+     Double_t error_lumin_ANSYSTAG= ... ;  //pb^-1
+     Double_t plot_opts_ANSYSTAG[2]={ ... };
+     Double_t UL95_ANSYSTAG[nreg_ANSYSTAG]={ ... };
+
+After writing these out, add these former variables to the lists that contain these variables
+for all the analyses. Exhaustively, add:
+
+     + nreg_ANSYSTAG to nSRlist
+     + data_ANSYSTAG to datalist
+     + smpred_ANSYSTAG to smpredlist
+     + error_smpred_ANSYSTAG to error_smpredlist
+     + lumin_ANSYSTAG to luminlist
+     + error_lumin_ANSYSTAG to error_luminlist
+     + plot_opts_ANSYSTAG to plot_optslist
+     + UL95_ANSYSTAG to UL95list
+     + "ANSYSTAG" to ansysnamelist
+
+*** NOTE *** Order is important! All these variables should be inserted into these lists in the same location.
+This is important for multiple reasons, and should apply to all files with lists of analyses.
+
+  ->  in ${MG_HOME}/MIW_codebase/include/delphesv3_funcs.h, add the following 3 lines
+
+     #include <code_ANSYSTAG.C>   // around line 15
+
+     delphes_codelist[n]=new string("ANSYSTAG"); //around line 57
+
+     codes[n]=&delphesv3::code_ANSYSTAG; //around line 67
+
+The first is to include the code, the second tells the system the name of the code,
+and the third is a function pointer than allows easy calling of the analysis code.
+For the last two, order is important... the order must match up with the order in 
+${MG_HOME}/MIW_codebase/include/MIW_search_data.h
+
+  -> in ${MG_HOME}/MIW_codebase/include/delphesv3_class.h, add the following line
+
+     void code_ANSYSTAG();
+
+This tells the delphes class that there is a function by the name of code_ANSYSTAG
+

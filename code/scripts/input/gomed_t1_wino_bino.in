@@ -1,0 +1,99 @@
+#! /bin/bash
+
+## This is a source file used as input to fullscript.sh 
+
+#Analysis Options
+# -1: No Analysis
+#  0: Do ATLAS and CMS Analysis
+#  1: Do ATLAS Analysis Only
+#  2: Do CMS Analysis Only
+ANSYSOPT=-1
+
+#Event Generation Options
+# -1: No Generation
+#  0: Run ATLAS and CMS
+#  1: Run ATLAS only
+#  2: Run CMS only
+GENOPT=-1
+
+#Plotting Options
+# -1: No Plotting
+#  0: Do Plotting
+PLOTOPT=0
+
+ATLTAGS="ATLAS2012_145 ATLAS2013_061"  #ATLAS analysis codes
+CMSTAGS="CMS2012_028" #CMS analysis codes
+ANSYSTAGS="${ATLTAGS} ${CMSTAGS}" # all analysis codes
+
+MODEL="mssm-NSUSY"  #natural supersymmetry
+M1TAG=" 1"  #this is the tag used in the suspect2 input file for bino soft mass
+M2TAG=" 2"  #this is the tag used in the suspect2 input file for wino soft mass
+M3TAG=" 3"  #this is the tag used in the suspect2 input file for gluino soft mass
+muTAG="23"  #this is the tag used in the suspect2 input file for higgsino soft mass
+MQ3TAG="43" #this is the tag used in the suspect2 input file for left 3rd gen squark soft mass
+MU3TAG="46" #this is the tag used in the suspect2 input file for right stop soft mass
+BOTLABEL="      5" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #bottom
+TOPLABEL="      6" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #top
+B1LABEL="1000005" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #sbottom
+T1LABEL="1000006" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #stop
+GOLABEL="1000021" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #gluino
+N1LABEL="1000022" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #neutralino
+X1LABEL="1000024" #label as given in $MG_HOME/Inputs/particles_name_default.txt for param_card #chargino
+
+## Parameters for travelling through NSUSY parameter space in a gridlike manner
+## Default Value ; Start Value ; End Value ; Step Value 
+## Higgsino Mass
+muMASS="1500" ; muSTART="${muMASS}" ; muEND="${muMASS}" ; muSTEP="${muMASS}" 
+## Bino Mass
+M1MASS="1500" ; M1START="   1" ; M1END=" 301" ; M1STEP="  50" 
+## Wino Mass
+M2MASS="1500" ; M2START="${M2MASS}" ; M2END="${M2MASS}" ; M2STEP="${M2MASS}"
+## Gluino Mass
+M3MASS="1500" ; M3START=" 700" ; M3END="1500" ; M3STEP=" 100"
+##Left 3rd Gen Squark Mass
+Q3MASS="2500" ; Q3START=" 100" ; Q3END="1300" ; Q3STEP=" 100" 
+##Right Stop Squark Mass
+U3MASS="2500" ; U3START="${U3MASS}" ; U3END="${U3MASS}" ; U3STEP="${U3MASS}" 
+
+#### Manual List of Points in NSUSY parameter space####
+muMAN="1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500"
+M1MAN="   1    1    1    1    1    1    1   51   51   51   51   51   51   51  101  101  101  101  101  101  101  151  151  151  151  151  151  151  201  201  201  201  201  201  201  251  251  251  251  251  251  251  301  301  301  301  301  301  301    1    1    1    1    1    1    1    1    1   51   51   51   51   51   51   51   51   51   51   51   51   51   51   51   51"
+M2MAN="1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500"
+M3MAN=" 750  850  950 1050 1150 1250 1350  750  850  950 1050 1150 1250 1350  750  850  950 1050 1150 1250 1350  750  850  950 1050 1150 1250 1350  750  850  950 1050 1150 1250 1350  750  850  950 1050 1150 1250 1350  750  850  950 1050 1150 1250 1350  700  800  900 1000 1100 1200 1300 1400 1500  700  800  900 1000 1100 1200 1300 1400 1500  700  800  900 1000 1100 1200 1300  "
+Q3MAN=" 550  650  750  850  950 1050 1150  550  650  750  850  950 1050 1150  550  650  750  850  950 1050 1150  550  650  750  850  950 1050 1150  550  650  750  850  950 1050 1150  550  650  750  850  950 1050 1150  550  650  750  850  950 1050 1150  150  150  150  150  150  150  150  150  150  150  150  150  150  150  150  150  150  150  110  110  110  110  110  110  110"
+U3MAN="2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500 2500"
+
+#### Specific Option For Sprectra
+DOUBLEOPTWINO=1  ## If On, then M2=2*M1
+DOUBLEOPTMU=0   ## If On, then mu=2*M1
+
+STORDIR="GOMED_T1_WINO_BINO" #name of directory where data is stored
+NEVENTS=25000 #Number of events to analyze 
+CMENERGY1=4000  #Energy of beam 1 in the collider, in GeV
+CMENERGY2=4000  #Energy of beam 2 in the collider, in GeV
+
+SEWOPT=1  # is process 1 complicated enough that I need to sew the production process together with the decay?
+PRODPART="${GOLABEL}"  # used to sew the production lhe files together with the decay lhe files
+
+# process 1 variables - is production process if SEWOPT=1 - is cmode if SEWOPT=0
+PROC1DIR="PP_GOGO_wb" #name of directory where crossx/pythia/delphes data is created
+PROC1GEN1="p p > go go QED=99 QCD=99"
+PROC1GEN2="p p > go go QED=99 QCD=99"
+
+#process 2 variables - is tmode decay if SEWOPT=1 - is tmode if SEWOPT=0
+PROC2DIR="GO_T1T_TTXB" #name of directory where crossx/pythia/delphes data is created
+PROC2GEN1="go > t~ t1  , t1  > t  n1  "
+PROC2GEN2="go > t  t1~ , t1~ > t~ n1  "
+
+#process 3 variables - is bmode decay if SEWOPT=1 - is bmode if SEWOPT=0
+PROC3DIR="GO_T1T_TBXW" #name of directory where crossx/pythia/delphes data is created
+PROC3GEN1="go > t~ t1  , t1  > b  x1+ "
+PROC3GEN2="go > t  t1~ , t1~ > b~ x1- "
+
+## For the kinematic evaluation of a decay mode, see MIW_script_functions.h
+DECOPT1="3"  
+DECOPTT="4"
+DECOPTB="5"
+
+FILEHEADER="mu, M1, M2, M3, MQ3, MU3, N1 Mass, X1 Mass, G Mass, B1Mass, T1 Mass"
+
